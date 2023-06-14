@@ -1,0 +1,65 @@
+.page5-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #f2f2f2;
+}
+
+.page5-title {
+  font-size: 36px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 40px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.page5-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.page5-button {
+  margin: 10px;
+  padding: 15px 30px;
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+}
+
+.page5-button:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 123, 255, 0.5);
+}
+
+.page5-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0, 123, 255, 0.3);
+}
+
+@media (max-width: 768px) {
+  .page5-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  .page5-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .page5-button {
+    padding: 12px 24px;
+    font-size: 16px;
+  }
+}

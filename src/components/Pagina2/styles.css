@@ -1,0 +1,24 @@
+.container {
+  text-align: center;
+  background: linear-gradient(to bottom, #ffffff, #c0c0c0); /* fondo degradado de blanco a plateado, de arriba a abajo */
+  padding-top: 5px; /* Reduce el espacio entre el borde superior del contenedor y el título */
+}
+
+.content {
+  margin-top: 20px;
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.button {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #ffffff;
+  color: #000000;
+  text-decoration: none;
+  margin: 0 10px;
+}
