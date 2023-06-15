@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
-const Pagina6 = () => {
+const Pagina6 = ({ location }) => {
+  const registroId = location?.state?.registroId;
   const [asistentes, setAsistentes] = useState([]);
+  const [comportamientos, setComportamientos] = useState([]);
+  const [aperturas, setAperturas] = useState([]);
 
   const handleInputChange = (e, index) => {
     const { name, value } = e.target;
@@ -23,8 +27,21 @@ const Pagina6 = () => {
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    // Hacer algo con los asistentes registrados
-    console.log(asistentes);
+
+    // Enviar los asistentes al servidor
+    axios
+      .post(`/api/registros/${registroId}/asistentes`, asistentes)
+      .then((response) => {
+        console.log('Asistentes registrados exitosamente:', response.data);
+        // Actualizar los comportamientos y aperturas
+        const nuevosComportamientos = response.data.map((asistente) => asistente.comportamiento);
+        const nuevasAperturas = response.data.map((asistente) => asistente.apertura);
+        setComportamientos(nuevosComportamientos);
+        setAperturas(nuevasAperturas);
+      })
+      .catch((error) => {
+        console.error('Error al registrar los asistentes:', error);
+      });
   };
 
   return (

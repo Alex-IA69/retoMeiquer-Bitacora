@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
 import Pagina1 from './components/Pagina1';
@@ -11,6 +11,13 @@ import Pagina6 from './components/Pagina6';
 import Banner from './Banner';
 
 function App() {
+  const [registroId, setRegistroId] = useState(null); // Estado para almacenar el registroId
+
+  // Función para actualizar el registroId
+  const actualizarRegistroId = (id) => {
+    setRegistroId(id);
+  };
+
   return (
     <Router>
       <div className="App">
@@ -19,12 +26,12 @@ function App() {
         </header>
         <div className="App-content">
           <Routes>
-            <Route path="/" element={<Pagina5 />} />
-            <Route path="/pagina1" element={<Pagina1 />} />
+            <Route path="/" element={<Pagina5 actualizarRegistroId={actualizarRegistroId} />} />
+            <Route path="/pagina1" element={<Pagina1 actualizarRegistroId={actualizarRegistroId} />} />
             <Route path="/pagina2" element={<Pagina2 />} />
             <Route path="/pagina4" element={<Pagina4 />} />
             <Route path="/pagina3" element={<Pagina3 />} />
-            <Route path="/pagina6" element={<Pagina6 />} />
+            <Route path="/pagina6" element={<Pagina6 registroId={registroId} />} />
           </Routes>
         </div>
       </div>
