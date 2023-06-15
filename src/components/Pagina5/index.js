@@ -7,7 +7,7 @@ const Pagina5 = () => {
     <div className="page5-container">
       <h1 className="page5-title">Bienvenid@ a Estación Meiquer</h1>
       <div className="page5-buttons">
-        <Link to="/pagina1" className="page5-button">
+        <Link to="/pagina6" className="page5-button">
           Registrar
         </Link>
         <Link to="/pagina2" className="page5-button">

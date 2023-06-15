@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import './styles.css';
 
 const Pagina1 = () => {
   const handleSliderChange = (e) => {
@@ -41,10 +40,7 @@ const Pagina1 = () => {
             </div>
           </div>
           <div className="attendance-container">
-            <div className="white-box">
-              <h2 className="blue-title">Niñas y Niños que asistieron</h2>
-              <input type="text" id="asistentes" placeholder="Ingrese los nombres" />
-            </div>
+            <Link to="/pagina6" className="button">Registrar Asistentes</Link>
           </div>
           <div className="implementers-container">
             <div className="meiquer-color">
@@ -70,31 +66,26 @@ const Pagina1 = () => {
             <div className="meiquer-color">
               <h2 className="white-title">Comportamiento</h2>
               <h5>Seleccione una opción</h5>
-              <p>Proactivo</p>
               <select>
                 <option value="opcion1">Carlos</option>
                 <option value="opcion2">Eduardo</option>
                 <option value="opcion3">Francisco</option>
               </select>
-              <p>Atento</p>
               <select>
                 <option value="opcion1">Carlos</option>
                 <option value="opcion2">Eduardo</option>
                 <option value="opcion3">Francisco</option>
               </select>
-              <p>Indiferente</p>
               <select>
                 <option value="opcion1">Carlos</option>
                 <option value="opcion2">Eduardo</option>
                 <option value="opcion3">Francisco</option>
               </select>
-              <p>Desinteresado</p>
               <select>
                 <option value="opcion1">Carlos</option>
                 <option value="opcion2">Eduardo</option>
                 <option value="opcion3">Francisco</option>
               </select>
-              <p>Disruptivo</p>
               <select>
                 <option value="opcion1">Carlos</option>
                 <option value="opcion2">Eduardo</option>
@@ -106,19 +97,16 @@ const Pagina1 = () => {
             <div className="white-box">
               <h2 className="blue-title">Apertura</h2>
               <h5>Seleccione una opción</h5>
-              <p>Apertura a opiniones externas</p>
               <select>
                 <option value="opcion1">Carlos</option>
                 <option value="opcion2">Eduardo</option>
                 <option value="opcion3">Francisco</option>
               </select>
-              <p>Apertura a interesarse en los demás</p>
               <select>
                 <option value="opcion1">Carlos</option>
                 <option value="opcion2">Eduardo</option>
                 <option value="opcion3">Francisco</option>
               </select>
-              <p>Apertura a escuchar</p>
               <select>
                 <option value="opcion1">Carlos</option>
                 <option value="opcion2">Eduardo</option>
@@ -129,7 +117,7 @@ const Pagina1 = () => {
         </div>
       </div>
       <div className="buttons">
-        <Link to="/" className="button">Guardar </Link> 
+        <Link to="/" className="button">Guardar</Link>
         <Link to="/" className="button">Volver</Link>
       </div>
     </div>
@@ -137,5 +125,3 @@ const Pagina1 = () => {
 };
 
 export default Pagina1;
-
-
