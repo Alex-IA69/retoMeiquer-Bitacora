@@ -12,8 +12,9 @@
 
 .form-container {
   display: flex;
+  width: 100%;
   flex-direction: column;
-  width: 40%;
+  width: 80%;
   margin-bottom: 20px;
   padding: 20px;
   background-color: #ffffff;
@@ -60,3 +61,38 @@ input {
 .button:hover {
   background-color: #0056b3;
 }
+
+.session-container {
+  display: flex;
+  align-items: flex-start;
+}
+
+.default-info {
+  flex: 1;
+  margin-right: 20px;
+}
+
+.additional-info {
+  flex: 1;
+  width: 100%;
+}
+
+.additional-info p {
+  margin-bottom: 10px;
+}
+
+.button-container {
+  margin-bottom: 20px;
+}
+
+.black-square {
+  background-color: #171717;
+  width: 100%;
+  display: inline-block;
+}
+
+.black-square h2 {
+  font-size: medium;
+  color: white;
+}
+

@@ -5,8 +5,6 @@ import axios from 'axios';
 const Pagina6 = ({ location }) => {
   const registroId = location?.state?.registroId;
   const [asistentes, setAsistentes] = useState([]);
-  const [comportamientos, setComportamientos] = useState([]);
-  const [aperturas, setAperturas] = useState([]);
 
   const handleInputChange = (e, index) => {
     const { name, value } = e.target;
@@ -28,16 +26,12 @@ const Pagina6 = ({ location }) => {
   const handleFormSubmit = (e) => {
     e.preventDefault();
 
-    // Enviar los asistentes al servidor
     axios
-      .post(`/api/registros/${registroId}/asistentes`, asistentes)
+      .post('http://localhost:3001/participantes', asistentes)
       .then((response) => {
         console.log('Asistentes registrados exitosamente:', response.data);
-        // Actualizar los comportamientos y aperturas
-        const nuevosComportamientos = response.data.map((asistente) => asistente.comportamiento);
-        const nuevasAperturas = response.data.map((asistente) => asistente.apertura);
-        setComportamientos(nuevosComportamientos);
-        setAperturas(nuevasAperturas);
+        const nombres = response.data.map((asistente) => asistente.nombre);
+        setAsistentes(nombres);
       })
       .catch((error) => {
         console.error('Error al registrar los asistentes:', error);
@@ -56,14 +50,14 @@ const Pagina6 = ({ location }) => {
               id={`asistente-nombre-${index}`}
               name="nombre"
               placeholder="Ingrese el nombre"
-              value={asistente.nombre}
+              value={asistente.nombre || ''}
               onChange={(e) => handleInputChange(e, index)}
             />
             <label htmlFor={`asistente-tipo-${index}`}>Tipo:</label>
             <select
               id={`asistente-tipo-${index}`}
               name="tipo"
-              value={asistente.tipo}
+              value={asistente.tipo || ''}
               onChange={(e) => handleInputChange(e, index)}
             >
               <option value="">Seleccione un tipo</option>
@@ -81,7 +75,7 @@ const Pagina6 = ({ location }) => {
         <button type="submit">Guardar</button>
       </form>
       <div className="buttons">
-        <Link to="/pagina1" className="button">
+        <Link to="/pagina7" className="button">
           Siguiente
         </Link>
       </div>

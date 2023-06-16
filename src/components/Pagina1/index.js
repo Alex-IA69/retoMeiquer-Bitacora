@@ -3,285 +3,327 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 const Pagina1 = () => {
-  const [registroId, setRegistroId] = useState(null);
-  const [nombre, setNombre] = useState('');
-  const [fecha, setFecha] = useState('');
-  const [procesoAprendizaje, setProcesoAprendizaje] = useState(1);
-  const [solucionadorProblemas, setSolucionadorProblemas] = useState(1);
-  const [ideas, setIdeas] = useState(1);
-  const [herramientasFisicas, setHerramientasFisicas] = useState(1);
-  const [procedimiento, setProcedimiento] = useState(1);
-  const [recordarInformacion, setRecordarInformacion] = useState(1);
-  const [comportamientos, setComportamientos] = useState([]);
-  const [aperturas, setAperturas] = useState([]);
+  const [nombresAsistentes, setNombresAsistentes] = useState([]);
+  const [formValues, setFormValues] = useState({
+    nombre: '',
+    fecha: '',
+    procesoAprendizaje: '',
+    solucionadorProblemas: '',
+    ideas: '',
+    usoHerramientas: '',
+    procedimiento: '',
+    recordarInformacion: '',
+    involucradoYPropone: false,
+    involucrado: false,
+    cooperativo: false,
+    indiferente: false,
+    desinteresado: false,
+    proactivo: '',
+    atento: '',
+    indiferenteComportamiento: '',
+    desinteresadoComportamiento: '',
+    disruptivo: '',
+    opinionesExternas: '',
+    interesEnLosDemas: '',
+    escuchar: ''
+  });
   const [asistentes, setAsistentes] = useState([]);
 
-  const handleSliderChange = (e, setState) => {
-    setState(Number(e.target.value));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    // Crear un objeto con los datos del registro
-    const registro = {
-      nombre,
-      fecha,
-      proceso_aprendizaje: procesoAprendizaje,
-      solucionador_problemas: solucionadorProblemas,
-      ideas,
-      herramientas_fisicas: herramientasFisicas,
-      procedimiento,
-      recordar_informacion: recordarInformacion,
-      comportamientos,
-      aperturas,
-    };
-
-    try {
-      // Realizar la solicitud POST al endpoint /api/registros
-      const response = await axios.post('/api/registros', registro);
-
-      // Verificar si la solicitud fue exitosa
-      if (response.status === 200) {
-        // El registro se guardó correctamente
-        console.log('Registro guardado correctamente');
-        // Obtener el ID del registro y pasarlo al estado
-        const { id } = response.data;
-        setRegistroId(id);
-        // Aquí puedes redirigir a otra página o mostrar un mensaje de éxito
-      } else {
-        // Hubo un error al guardar el registro
-        console.log('Error al guardar el registro');
-        // Aquí puedes mostrar un mensaje de error o manejar la situación de otra manera
-      }
-    } catch (error) {
-      console.log('Error de conexión:', error);
-      // Manejar el error de conexión, por ejemplo, mostrando un mensaje de error al usuario
-    }
-  };
-
   useEffect(() => {
-    // Obtener los comportamientos desde el servidor
     axios
-      .get('/api/comportamientos')
+      .get('http://localhost:3001/participantes')
       .then((response) => {
-        setComportamientos(response.data);
+        const nombres = response.data.map((asistente) => asistente.nombre);
+        setNombresAsistentes(nombres);
       })
       .catch((error) => {
-        console.error('Error al obtener los comportamientos:', error);
-      });
-
-    // Obtener las aperturas desde el servidor
-    axios
-      .get('/api/aperturas')
-      .then((response) => {
-        setAperturas(response.data);
-      })
-      .catch((error) => {
-        console.error('Error al obtener las aperturas:', error);
+        console.error('Error al obtener los nombres de los asistentes:', error);
       });
   }, []);
 
-  useEffect(() => {
-    // Obtener el registro actual desde el servidor si hay un registroId
-    if (registroId) {
-      axios
-        .get(`/api/registros/${registroId}`)
-        .then((response) => {
-          const registro = response.data;
-          setNombre(registro.nombre);
-          setFecha(registro.fecha);
-          setProcesoAprendizaje(registro.proceso_aprendizaje);
-          setSolucionadorProblemas(registro.solucionador_problemas);
-          setIdeas(registro.ideas);
-          setHerramientasFisicas(registro.herramientas_fisicas);
-          setProcedimiento(registro.procedimiento);
-          setRecordarInformacion(registro.recordar_informacion);
-          setComportamientos(registro.comportamientos);
-          setAperturas(registro.aperturas);
-        })
-        .catch((error) => {
-          console.error('Error al obtener el registro:', error);
-        });
-    }
-  }, [registroId]);
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    const newValue = type === 'checkbox' ? checked : value;
+    setFormValues({ ...formValues, [name]: newValue });
+  };
 
-  useEffect(() => {
-    // Obtener los asistentes asociados al registro actual desde el servidor si hay un registroId
-    if (registroId) {
-      axios
-        .get(`/api/registros/${registroId}/asistentes`)
-        .then((response) => {
-          setAsistentes(response.data);
-        })
-        .catch((error) => {
-          console.error('Error al obtener los asistentes:', error);
-        });
-    }
-  }, [registroId]);
+  const handleAsistentesChange = (e) => {
+    const { value } = e.target;
+    const selectedAsistentes = value.split(',').map((asistente) => asistente.trim());
+    setAsistentes(selectedAsistentes);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    // 1. Guardar los datos en la tabla Sesiones
+    const sesionData = {
+      cantParticipantes: asistentes.length,
+      nombreAct: formValues.nombre,
+      nombreEspacio: '',
+      fecha: formValues.fecha,
+      notas: '',
+      materialNecesario: false,
+      internet: false,
+      mobiliarioAdecuado: false,
+      luzElectrica: false,
+      banos: false
+    };
+
+    axios
+      .post('http://localhost:3001/sesiones', sesionData)
+      .then((response) => {
+        const sesionId = response.data.message.split(':')[1].trim();
+
+        // 2. Guardar los datos en la tabla Cognitivo
+        const cognitivoData = {
+          idSesion: sesionId,
+          pensOrdenAlto: parseInt(formValues.procesoAprendizaje),
+          pensMinRequerido: parseInt(formValues.solucionadorProblemas),
+          pensNoRelacionado: parseInt(formValues.ideas),
+          pensDesconocidos: parseInt(formValues.usoHerramientas)
+        };
+
+        axios
+          .post('http://localhost:3001/cognitivo', cognitivoData)
+          .then(() => {
+            console.log('Datos de Cognitivo guardados exitosamente');
+          })
+          .catch((error) => {
+            console.error('Error al guardar los datos de Cognitivo:', error);
+          });
+
+        // 3. Guardar los datos en la tabla Interacciones
+        const interaccionesData = {
+          idSesion: sesionId,
+          conCompaneros: parseInt(formValues.procedimiento),
+          conImplementadores: 0, // ¡Reemplaza 0 por el valor correcto!
+          disenadoresContenido: 0 // ¡Reemplaza 0 por el valor correcto!
+        };
+
+        axios
+          .post('http://localhost:3001/interacciones', interaccionesData)
+          .then(() => {
+            console.log('Datos de Interacciones guardados exitosamente');
+          })
+          .catch((error) => {
+            console.error('Error al guardar los datos de Interacciones:', error);
+          });
+
+        // 4. Guardar los datos en la tabla NivelDeInteres
+        const nivelInteresData = {
+          idSesion: sesionId,
+          pensandoProcesoAprendizaje: parseInt(formValues.recordarInformacion),
+          solucionadorProblemas: 0, // ¡Reemplaza 0 por el valor correcto!
+          ideas: 0, // ¡Reemplaza 0 por el valor correcto!
+          usoHerramientas: 0, // ¡Reemplaza 0 por el valor correcto!
+          procedimiento: 0, // ¡Reemplaza 0 por el valor correcto!
+          recordarCiertaInfo: 0 // ¡Reemplaza 0 por el valor correcto!
+        };
+
+        axios
+          .post('http://localhost:3001/niveldeinteres', nivelInteresData)
+          .then(() => {
+            console.log('Datos de NivelDeInteres guardados exitosamente');
+          })
+          .catch((error) => {
+            console.error('Error al guardar los datos de NivelDeInteres:', error);
+          });
+
+        // 5. Guardar los datos en la tabla Comportamiento
+        const comportamientoData = {
+          idSesion: sesionId,
+          proactivo: formValues.proactivo,
+          atento: formValues.atento,
+          indiferente: formValues.indiferenteComportamiento,
+          desinteresado: formValues.desinteresadoComportamiento,
+          disruptivo: formValues.disruptivo
+        };
+
+        axios
+          .post('http://localhost:3001/comportamiento', comportamientoData)
+          .then(() => {
+            console.log('Datos de Comportamiento guardados exitosamente');
+          })
+          .catch((error) => {
+            console.error('Error al guardar los datos de Comportamiento:', error);
+          });
+
+        // 6. Guardar los datos en la tabla Emocional
+        const emocionalData = {
+          idSesion: sesionId,
+          emocionado_inspirado: '', // ¡Reemplaza '' por el valor correcto!
+          positivo_dispuesto: '', // ¡Reemplaza '' por el valor correcto!
+          atento_participativo: '', // ¡Reemplaza '' por el valor correcto!
+          frustrado_preocupado: '', // ¡Reemplaza '' por el valor correcto!
+          molesto_triste: '' // ¡Reemplaza '' por el valor correcto!
+        };
+
+        axios
+          .post('http://localhost:3001/emocional', emocionalData)
+          .then(() => {
+            console.log('Datos de Emocional guardados exitosamente');
+          })
+          .catch((error) => {
+            console.error('Error al guardar los datos de Emocional:', error);
+          });
+
+        // 7. Guardar los datos en la tabla Apertura
+        const aperturaData = {
+          idSesion: sesionId,
+          opinionesExternas: formValues.opinionesExternas,
+          interesEnLosDemas: formValues.interesEnLosDemas,
+          escuchar: formValues.escuchar
+        };
+
+        axios
+          .post('http://localhost:3001/apertura', aperturaData)
+          .then(() => {
+            console.log('Datos de Apertura guardados exitosamente');
+          })
+          .catch((error) => {
+            console.error('Error al guardar los datos de Apertura:', error);
+          });
+
+        // 8. Guardar los datos en la tabla Involucramiento
+        const involucramientoData = {
+          idSesion: sesionId,
+          involucradoYPropone: formValues.involucradoYPropone,
+          involucrado: formValues.involucrado,
+          cooperativo: formValues.cooperativo,
+          indiferente: formValues.indiferente,
+          desinteresado: formValues.desinteresado
+        };
+
+        axios
+          .post('http://localhost:3001/involucramiento', involucramientoData)
+          .then(() => {
+            console.log('Datos de Involucramiento guardados exitosamente');
+            // Realizar alguna acción adicional o redirigir a otra página
+          })
+          .catch((error) => {
+            console.error('Error al guardar los datos de Involucramiento:', error);
+          });
+      })
+      .catch((error) => {
+        console.error('Error al guardar el registro:', error);
+      });
+  };
 
   return (
     <div className="container">
       <h1>Registro</h1>
-      <form onSubmit={handleSubmit}>
-        <div className="content">
-          <div className="input-container">
-            <label htmlFor="nombre">Nombre:</label>
-            <input
-              type="text"
-              id="nombre"
-              placeholder="Ingresa tu nombre"
-              value={nombre}
-              onChange={(e) => setNombre(e.target.value)}
-            />
-          </div>
+      <div className="content">
+        <div className="input-container">
+          <label htmlFor="nombre">Nombre:</label>
+          <input type="text" id="nombre" name="nombre" value={formValues.nombre} onChange={handleChange} placeholder="Ingresa tu nombre" />
+        </div>
 
-          <div className="input-container">
-            <label htmlFor="fecha">Fecha:</label>
-            <input
-              type="date"
-              id="fecha"
-              value={fecha}
-              onChange={(e) => setFecha(e.target.value)}
-            />
-          </div>
+        <div className="input-container">
+          <label htmlFor="fecha">Fecha:</label>
+          <input type="date" id="fecha" name="fecha" value={formValues.fecha} onChange={handleChange} />
+        </div>
 
-          <div className="box-container">
-            <div className="interest-container">
-              <div className="meiquer-color">
-                <h2 className="white-title">Nivel de interés</h2>
-                <p>Pensando en el proceso de aprendizaje</p>
-                <input
-                  type="range"
-                  min="1"
-                  max="5"
-                  step="1"
-                  id="proceso-aprendizaje"
-                  value={procesoAprendizaje}
-                  onChange={(e) => handleSliderChange(e, setProcesoAprendizaje)}
-                />
-                <p>Solucionador de problemas</p>
-                <input
-                  type="range"
-                  min="1"
-                  max="5"
-                  step="1"
-                  id="solucionador-problemas"
-                  value={solucionadorProblemas}
-                  onChange={(e) => handleSliderChange(e, setSolucionadorProblemas)}
-                />
-                <p>Ideas</p>
-                <input
-                  type="range"
-                  min="1"
-                  max="5"
-                  step="1"
-                  id="ideas"
-                  value={ideas}
-                  onChange={(e) => handleSliderChange(e, setIdeas)}
-                />
-                <p>Uso de herramientas físicas</p>
-                <input
-                  type="range"
-                  min="1"
-                  max="5"
-                  step="1"
-                  id="herramientas-fisicas"
-                  value={herramientasFisicas}
-                  onChange={(e) => handleSliderChange(e, setHerramientasFisicas)}
-                />
-                <p>Procedimiento</p>
-                <input
-                  type="range"
-                  min="1"
-                  max="5"
-                  step="1"
-                  id="procedimiento"
-                  value={procedimiento}
-                  onChange={(e) => handleSliderChange(e, setProcedimiento)}
-                />
-                <p>Recordar cierta información</p>
-                <input
-                  type="range"
-                  min="1"
-                  max="5"
-                  step="1"
-                  id="recordar-informacion"
-                  value={recordarInformacion}
-                  onChange={(e) => handleSliderChange(e, setRecordarInformacion)}
-                />
-              </div>
+        <div className="box-container">
+          <div className="interest-container">
+            <div className="meiquer-color">
+              <h2 className="white-title">Nivel de interés</h2>
+              <p>Pensando en el proceso de aprendizaje</p>
+              <input type="range" min="1" max="5" step="1" id="proceso-aprendizaje" name="procesoAprendizaje" value={formValues.procesoAprendizaje} onChange={handleChange} />
+              <p>Solucionador de problemas</p>
+              <input type="range" min="1" max="5" step="1" id="solucionador-problemas" name="solucionadorProblemas" value={formValues.solucionadorProblemas} onChange={handleChange} />
+              <p>Ideas</p>
+              <input type="range" min="1" max="5" step="1" id="ideas" name="ideas" value={formValues.ideas} onChange={handleChange} />
+              <p>Uso de herramientas físicas</p>
+              <input type="range" min="1" max="5" step="1" id="herramientas-fisicas" name="usoHerramientas" value={formValues.usoHerramientas} onChange={handleChange} />
+              <p>Procedimiento</p>
+              <input type="range" min="1" max="5" step="1" id="procedimiento" name="procedimiento" value={formValues.procedimiento} onChange={handleChange} />
+              <p>Recordar cierta información</p>
+              <input type="range" min="1" max="5" step="1" id="recordar-informacion" name="recordarInformacion" value={formValues.recordarInformacion} onChange={handleChange} />
             </div>
-            <div className="attendance-container">
-              <h2>Asistentes registrados:</h2>
-              <ul>
-                {asistentes.map((asistente) => (
-                  <li key={asistente.id}>{asistente.nombre}</li>
+          </div>
+          <div className="attendance-container">
+            <div className="white-box">
+              <h2 className="blue-title">Niñas y Niños que asistieron</h2>
+              <input type="text" id="asistentes" onChange={handleAsistentesChange} placeholder="Ingrese los nombres separados por comas" />
+            </div>
+          </div>
+          <div className="implementers-container">
+            <div className="meiquer-color">
+              <h2 className="white-title">Involucramiento de implementadores</h2>
+              <p>Involucrado y propone <input type="checkbox" id="Involucrado-propone" name="involucradoYPropone" checked={formValues.involucradoYPropone} onChange={handleChange} /></p>
+              <p>Involucrado <input type="checkbox" id="Involucrado" name="involucrado" checked={formValues.involucrado} onChange={handleChange} /></p>
+              <p>Cooperativo <input type="checkbox" id="Cooperativo" name="cooperativo" checked={formValues.cooperativo} onChange={handleChange} /></p>
+              <p>Indiferente <input type="checkbox" id="Indiferente" name="indiferente" checked={formValues.indiferente} onChange={handleChange} /></p>
+              <p>Desinteresado<input type="checkbox" id="Desinteresado" name="desinteresado" checked={formValues.desinteresado} onChange={handleChange} /></p>
+            </div>
+          </div>
+          <div className="behavior-container">
+            <div className="meiquer-color">
+              <h2 className="white-title">Comportamiento</h2>
+              <h5>Seleccione una opción</h5>
+              <p>Proactivo</p>
+              <select name="proactivo" value={formValues.proactivo} onChange={handleChange}>
+                {nombresAsistentes.map((nombre, index) => (
+                  <option key={index} value={nombre}>{nombre}</option>
                 ))}
-              </ul>
-              <Link to={{ pathname: "/pagina6", state: { registroId } }} className="button">
-                Registrar Asistentes
-              </Link>
+              </select>
+              <p>Atento</p>
+              <select name="atento" value={formValues.atento} onChange={handleChange}>
+                {nombresAsistentes.map((nombre, index) => (
+                  <option key={index} value={nombre}>{nombre}</option>
+                ))}
+              </select>
+              <p>Indiferente</p>
+              <select name="indiferenteComportamiento" value={formValues.indiferenteComportamiento} onChange={handleChange}>
+                {nombresAsistentes.map((nombre, index) => (
+                  <option key={index} value={nombre}>{nombre}</option>
+                ))}
+              </select>
+              <p>Desinteresado</p>
+              <select name="desinteresadoComportamiento" value={formValues.desinteresadoComportamiento} onChange={handleChange}>
+                {nombresAsistentes.map((nombre, index) => (
+                  <option key={index} value={nombre}>{nombre}</option>
+                ))}
+              </select>
+              <p>Disruptivo</p>
+              <select name="disruptivo" value={formValues.disruptivo} onChange={handleChange}>
+                {nombresAsistentes.map((nombre, index) => (
+                  <option key={index} value={nombre}>{nombre}</option>
+                ))}
+              </select>
             </div>
-            <div className="implementers-container">
-              <div className="meiquer-color">
-                <h2 className="white-title">Involucramiento de implementadores</h2>
-                {/* Aquí debes mostrar los checkboxes de los implementadores */}
-              </div>
-            </div>
-            <div className="environment-container">
-              <div className="white-box">
-                <h2 className="blue-title">Entorno</h2>
-                {/* Aquí debes mostrar los checkboxes del entorno */}
-              </div>
-            </div>
-            <div className="behavior-container">
-              <div className="meiquer-color">
-                <h2 className="white-title">Comportamiento</h2>
-                <h5>Seleccione una opción</h5>
-                <select
-                  value={comportamientos[0]}
-                  onChange={(e) => setComportamientos([e.target.value, ...comportamientos.slice(1)])}
-                >
-                  <option value="">Seleccione una opción</option>
-                  {comportamientos.map((comportamiento, index) => (
-                    <option key={index} value={comportamiento}>
-                      {comportamiento}
-                    </option>
-                  ))}
-                </select>
-                {/* Aquí debes mostrar los selects de los comportamientos restantes */}
-              </div>
-            </div>
-            <div className="opening-container">
-              <div className="white-box">
-                <h2 className="blue-title">Apertura</h2>
-                <h5>Seleccione una opción</h5>
-                <select
-                  value={aperturas[0]}
-                  onChange={(e) => setAperturas([e.target.value, ...aperturas.slice(1)])}
-                >
-                  <option value="">Seleccione una opción</option>
-                  {aperturas.map((apertura, index) => (
-                    <option key={index} value={apertura}>
-                      {apertura}
-                    </option>
-                  ))}
-                </select>
-                {/* Aquí debes mostrar los selects de las aperturas restantes */}
-              </div>
+          </div>
+          <div className="opening-container">
+            <div className="white-box">
+              <h2 className="blue-title">Apertura</h2>
+              <h5>Seleccione una opción</h5>
+              <p>Apertura a opiniones externas</p>
+              <select name="opinionesExternas" value={formValues.opinionesExternas} onChange={handleChange}>
+                {nombresAsistentes.map((nombre, index) => (
+                  <option key={index} value={nombre}>{nombre}</option>
+                ))}
+              </select>
+              <p>Apertura a interesarse en los demás</p>
+              <select name="interesEnLosDemas" value={formValues.interesEnLosDemas} onChange={handleChange}>
+                {nombresAsistentes.map((nombre, index) => (
+                  <option key={index} value={nombre}>{nombre}</option>
+                ))}
+              </select>
+              <p>Apertura a escuchar</p>
+              <select name="escuchar" value={formValues.escuchar} onChange={handleChange}>
+                {nombresAsistentes.map((nombre, index) => (
+                  <option key={index} value={nombre}>{nombre}</option>
+                ))}
+              </select>
             </div>
           </div>
         </div>
-        <div className="buttons">
-          <button type="submit" className="button">
-            Guardar
-          </button>
-          <Link to="/" className="button">
-            Volver
-          </Link>
-        </div>
-      </form>
+      </div>
+      <div className="buttons">
+        <button className="button" onClick={handleSubmit}>Guardar</button>
+        <Link to="/" className="button">Volver</Link>
+      </div>
     </div>
   );
 };

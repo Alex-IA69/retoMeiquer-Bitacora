@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon server"
   },
   "proxy": "http://localhost:3000",
   "keywords": [],
@@ -16,5 +17,8 @@
     "express": "^4.18.2",
     "mysql": "^2.18.1",
     "mysql2": "^3.3.5"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
   }
 }

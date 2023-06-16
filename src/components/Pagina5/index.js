@@ -8,10 +8,10 @@ const Pagina5 = () => {
       <h1 className="page5-title">Bienvenid@ a Estación Meiquer</h1>
       <div className="page5-buttons">
         <Link to="/pagina6" className="page5-button">
-          Registrar
+          Registrar una sesión
         </Link>
         <Link to="/pagina2" className="page5-button">
-          Ver Sesiones Pasadas
+          Ver resumen de sesiones
         </Link>
       </div>
     </div>
